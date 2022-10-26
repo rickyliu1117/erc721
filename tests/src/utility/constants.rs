@@ -3,6 +3,7 @@ pub(crate) const MINT_SESSION_WASM: &str = "mint_call.wasm";
 pub(crate) const BALANCE_OF_SESSION_WASM: &str = "balance_of_call.wasm";
 pub(crate) const MINTING_CONTRACT_WASM: &str = "minting_contract.wasm";
 pub(crate) const TRANSFER_SESSION_WASM: &str = "transfer_call.wasm";
+pub(crate) const MIGRATE_WASM: &str = "migrate.wasm";
 pub(crate) const CONTRACT_NAME: &str = "nft_contract";
 pub(crate) const MINTING_CONTRACT_NAME: &str = "minting_contract_hash";
 pub(crate) const NFT_TEST_COLLECTION: &str = "nft_test";
@@ -43,7 +44,6 @@ pub(crate) const ARG_OWNERSHIP_MODE: &str = "ownership_mode";
 pub(crate) const ARG_NFT_KIND: &str = "nft_kind";
 pub(crate) const TOKEN_COUNTS: &str = "balances";
 pub(crate) const TOKEN_OWNERS: &str = "token_owners";
-pub(crate) const OWNED_TOKENS: &str = "owned_tokens";
 pub(crate) const BURNT_TOKENS: &str = "burnt_tokens";
 pub(crate) const OPERATOR: &str = "operator";
 pub(crate) const BALANCES: &str = "balances";
@@ -85,3 +85,14 @@ pub(crate) const MALFORMED_META_DATA: &str = r#"{
   "symbol": abc,
   "token_uri": "https://www.barfoo.com"
 }"#;
+pub(crate) const ACCESS_KEY_NAME: &str = "nft_contract_package_access";
+pub(crate) const CONTRACT_1_0_0_WASM: &str = "contract_1_0_0.wasm";
+pub(crate) const PAGE_SIZE: u64 = 10;
+pub(crate) const TOKEN_COUNT_AT_UPGRADE: &str = "token_count_at_upgrade";
+pub(crate) const BACKFILLED_TOKEN_TRACKER: &str = "backfilled_token_tracker";
+pub(crate) const PAGE_DICTIONARY_PREFIX: &str = "page";
+pub(crate) const MAX_PAGE_NUMBER: &str = "max_page_number";
+pub(crate) const HASH_KEY_NAME: &str = "nft_contract_package";
+pub(crate) const ARG_NFT_PACKAGE_HASH: &str = "nft_package_hash";
+pub(crate) const REVERSE_TRACKER: &str = "reverse_tracker";
+pub(crate) const ALL_TOKEN_OWNERS: &str = "all_token_owners";

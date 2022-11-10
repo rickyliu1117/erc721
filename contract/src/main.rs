@@ -595,13 +595,7 @@ pub extern "C" fn mint() {
 
     let receipt_address = Key::dictionary(page_uref, page_item_key.as_bytes());
 
-    let receipt_name = utils::get_stored_value_with_user_errors::<String>(
-        RECEIPT_NAME,
-        NFTCoreError::MissingReceiptName,
-        NFTCoreError::InvalidReceiptName,
-    );
-
-    let receipt_string = format!("{}-m-{}-p-{}", receipt_name, PAGE_SIZE, page_table_entry);
+    let receipt_string = utils::get_receipt_name(page_table_entry);
 
     let receipt = CLValue::from_t((receipt_string, receipt_address, token_identifier_string))
         .unwrap_or_revert_with(NFTCoreError::FailedToConvertToCLValue);
@@ -1019,13 +1013,7 @@ pub extern "C" fn transfer() {
         utils::encode_page_address(&source_owner_key, page_table_entry).as_bytes(),
     );
 
-    let receipt_name = utils::get_stored_value_with_user_errors::<String>(
-        RECEIPT_NAME,
-        NFTCoreError::MissingReceiptName,
-        NFTCoreError::InvalidReceiptName,
-    );
-
-    let receipt_string = format!("{}-m-{}-p-{}", receipt_name, PAGE_SIZE, page_table_entry);
+    let receipt_string = utils::get_receipt_name(page_table_entry);
 
     let receipt = CLValue::from_t((receipt_string, owned_tokens_actual_key))
         .unwrap_or_revert_with(NFTCoreError::FailedToConvertToCLValue);
@@ -1267,6 +1255,43 @@ pub extern "C" fn migrate() {
         None => runtime::put_key(MIGRATION_FLAG, storage::new_uref(true).into()),
     }
 
+fn install_nft_contract() -> (ContractHash, ContractVersion) {
+    let entry_points = {
+        let mut entry_points = EntryPoints::new();
+
+        // This entrypoint initializes the contract and is required to be called during the session
+        // where the contract is installed; immediately after the contract has been installed but
+        // before exiting session. All parameters are required.
+        // This entrypoint is intended to be called exactly once and will error if called more than
+        // once.
+        let init_contract = EntryPoint::new(
+            ENTRY_POINT_INIT,
+            vec![
+                Parameter::new(ARG_COLLECTION_NAME, CLType::String),
+                Parameter::new(ARG_COLLECTION_SYMBOL, CLType::String),
+                Parameter::new(ARG_TOTAL_TOKEN_SUPPLY, CLType::U64),
+                Parameter::new(ARG_ALLOW_MINTING, CLType::Bool),
+                Parameter::new(ARG_MINTING_MODE, CLType::U8),
+                Parameter::new(ARG_OWNERSHIP_MODE, CLType::U8),
+                Parameter::new(ARG_NFT_KIND, CLType::U8),
+                Parameter::new(ARG_HOLDER_MODE, CLType::U8),
+                Parameter::new(ARG_WHITELIST_MODE, CLType::U8),
+                Parameter::new(
+                    ARG_CONTRACT_WHITELIST,
+                    CLType::List(Box::new(CLType::ByteArray(32u32))),
+                ),
+                Parameter::new(ARG_JSON_SCHEMA, CLType::String),
+                Parameter::new(ARG_RECEIPT_NAME, CLType::String),
+                Parameter::new(ARG_IDENTIFIER_MODE, CLType::U8),
+                Parameter::new(ARG_BURN_MODE, CLType::U8),
+                Parameter::new(ARG_NFT_METADATA_KIND, CLType::U8),
+                Parameter::new(ARG_METADATA_MUTABILITY, CLType::U8),
+            ],
+            CLType::Unit,
+            EntryPointAccess::Public,
+            EntryPointType::Contract,
+        );
+
     runtime::print("invoking migrating entrypoint");
 
     let total_token_supply = utils::get_stored_value_with_user_errors::<u64>(
@@ -1351,12 +1376,6 @@ pub extern "C" fn updated_receipts() {
         utils::should_migrate_token_hashes(token_owner);
     }
 
-    let receipt = utils::get_stored_value_with_user_errors::<String>(
-        RECEIPT_NAME,
-        NFTCoreError::MissingReceiptName,
-        NFTCoreError::InvalidReceiptName,
-    );
-
     let page_table = utils::get_dictionary_value_from_key::<Vec<bool>>(
         PAGE_TABLE,
         &utils::get_owned_tokens_dictionary_item_key(token_owner),
@@ -1376,7 +1395,7 @@ pub extern "C" fn updated_receipts() {
         );
         let page_item_key = utils::encode_page_address(&token_owner, page_table_entry as u64);
         let page_dictionary_address = Key::dictionary(page_uref, page_item_key.as_bytes());
-        let receipt_name = format!("{}-m-{}-p-{}", receipt, PAGE_SIZE, page_table_entry);
+        let receipt_name = utils::get_receipt_name(page_table_entry as u64);
         updated_receipts.push((receipt_name, page_dictionary_address))
     }
 

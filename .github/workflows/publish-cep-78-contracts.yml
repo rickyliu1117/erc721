@@ -25,8 +25,8 @@ jobs:
       - name: Create tarball
         run: ./ci/package_wasm.sh
 
-      - name: Upload tarball to release
-        uses: svenstaro/upload-release-action@133984371c30d34e38222a64855679a414cb7575 #v2.3.0
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /tmp/ci_package_wasm_${{ github.ref_name }}/cep-78-wasm.tar.gz
+      #- name: Upload tarball to release
+      # uses: svenstaro/upload-release-action@133984371c30d34e38222a64855679a414cb7575 #v2.3.0
+      # with:
+      #   repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #   file: /tmp/ci_package_wasm_${{ github.ref_name }}/cep-78-wasm.tar.gz

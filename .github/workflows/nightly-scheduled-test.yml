@@ -11,7 +11,7 @@ jobs:
   nightly-make-test:
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-22.04]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b #v3.0.2
@@ -26,13 +26,3 @@ jobs:
       - name: Run tests
         run: make test
 
-      - name: Slack Notification
-        uses: ravsamhq/notify-slack-action@4ed28566c2bdcdaee6dca2b46b9666d01b4ed8a4 #v1.10.0
-        if: always()
-        with:
-          status: ${{ job.status }}
-          notification_title: "*{repo}*"
-          message_format: "{emoji} *{workflow}* *{status_message}* in <{repo_url}|{repo}@{branch}> on <{commit_url}|{commit_sha}>"
-          footer: "<{run_url}|View Run>"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
